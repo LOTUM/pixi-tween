@@ -11,10 +11,10 @@
     "animation",
     "tween"
   ],
-  "homepage": "https://github.com/Nazariglez/pixi-tween",
+  "homepage": "https://github.com/lotum/pixi-tween",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Nazariglez/pixi-tween.git"
+    "url": "https://github.com/lotum/pixi-tween.git"
   },
   "scripts": {
     "prepublish": "npm run build",

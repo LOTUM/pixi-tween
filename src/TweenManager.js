@@ -1,70 +1,76 @@
+import * as PIXI from 'pixi.js';
 import Tween from './Tween';
 
-export default class TweenManager {
-  constructor(){
-      this.tweens = [];
-      this._tweensToDelete = [];
+export default class TweenManager extends PIXI.utils.EventEmitter {
 
-      this._last = 0;
-  }
+    constructor() {
+        super();
 
-  update(delta){
-    let deltaMS;
-    if(!delta && delta !== 0){
-      deltaMS = this._getDeltaMS();
-      delta = deltaMS/1000;
-    }else{
-      deltaMS = delta*1000;
+        this.tweens = [];
+        this._tweensToDelete = [];
+        this._interactive = false
     }
 
-    for(let i = 0; i < this.tweens.length; i++){
-      let tween = this.tweens[i];
-      if(tween.active){
-        tween.update(delta, deltaMS);
-        if(tween.isEnded && tween.expire){
-          tween.remove();
+    update(deltaTime) {
+        for (let i = 0; i < this.tweens.length; i++) {
+            let tween = this.tweens[i];
+            if (tween.active) {
+                tween.update(deltaTime);
+                if (tween.isEnded && tween.expire) {
+                    tween.remove();
+                }
+            }
         }
-      }
+
+        if (this._tweensToDelete.length) {
+            for (let i = 0; i < this._tweensToDelete.length; i++) {
+                this._remove(this._tweensToDelete[i]);
+            }
+            this._tweensToDelete.length = 0;
+        }
     }
 
-    if(this._tweensToDelete.length){
-      for(let i = 0; i < this._tweensToDelete.length; i++) this._remove(this._tweensToDelete[i]);
-      this._tweensToDelete.length = 0;
+    getTweensForTarget(target) {
+        let tweens = [];
+        for (let i = 0; i < this.tweens.length; i++) {
+            if (this.tweens[i].target === target) {
+                tweens.push(this.tweens[i]);
+            }
+        }
+
+        return tweens;
     }
-  }
 
-  getTweensForTarget(target){
-    let tweens = [];
-    for(let i = 0; i < this.tweens.length; i++){
-      if(this.tweens[i].target === target)tweens.push(this.tweens[i]);
+    createTween(target) {
+        return new Tween(target, this);
     }
 
-    return tweens;
-  }
+    addTween(tween) {
+        tween.manager = this;
+        this.tweens.push(tween);
+        this._toggle(true)
+    }
 
-  createTween(target){
-    return new Tween(target, this);
-  }
+    removeTween(tween) {
+        this._tweensToDelete.push(tween);
+    }
 
-  addTween(tween){
-    tween.manager = this;
-    this.tweens.push(tween);
-  }
+    _remove(tween) {
+        let index = this.tweens.indexOf(tween);
+        if (index !== -1) {
+            this.tweens.splice(index, 1);
+        }
 
-  removeTween(tween){
-    this._tweensToDelete.push(tween);
-  }
+        if (this.tweens.length === 0) {
+            this._toggle(false);
+        }
+    }
 
-  _remove(tween){
-    let index = this.tweens.indexOf(tween);
-    if(index !== -1)this.tweens.splice(index, 1);
-  }
-
-  _getDeltaMS(){
-    if(this._last === 0)this._last = Date.now();
-    let now = Date.now();
-    let deltaMS = now-this._last;
-    this._last = now;
-    return deltaMS;
-  }
+    _toggle(interactive) {
+        if (this._interactive !== interactive) {
+            console.log("TweenManager: toggle interactive", interactive);
+            this._interactive = interactive;
+            this.emit("interactive", interactive);
+        }
+    }
 }
