@@ -11,6 +11,20 @@ export default class TweenManager extends PIXI.utils.EventEmitter {
         this._interactive = false
     }
 
+    attach(ticker) {
+        ticker.add(function() {
+            this.update(ticker.elapsedMS)
+        }, this);
+
+        this.on("interactive", (interactive) => {
+            if (interactive) {
+                ticker.start()
+            } else {
+                ticker.stop()
+            }
+        })
+    }
+
     update(deltaTime) {
         for (let i = 0; i < this.tweens.length; i++) {
             let tween = this.tweens[i];
@@ -68,7 +82,6 @@ export default class TweenManager extends PIXI.utils.EventEmitter {
 
     _toggle(interactive) {
         if (this._interactive !== interactive) {
-            console.log("TweenManager: toggle interactive", interactive);
             this._interactive = interactive;
             this.emit("interactive", interactive);
         }

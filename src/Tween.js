@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import Easing from './Easing';
 
 export default class Tween extends PIXI.utils.EventEmitter {
+
     constructor(target, manager) {
         super();
         this.target = target;
@@ -10,8 +11,10 @@ export default class Tween extends PIXI.utils.EventEmitter {
     }
 
     addTo(manager) {
-        this.manager = manager;
-        this.manager.addTween(this);
+        if (!this.manager) {
+            this.manager = manager;
+            this.manager.addTween(this);
+        }
         return this;
     }
 
@@ -43,8 +46,10 @@ export default class Tween extends PIXI.utils.EventEmitter {
     }
 
     remove() {
-        if (!this.manager) return this;
-        this.manager.removeTween(this);
+        if (this.manager) {
+            this.manager.removeTween(this);
+            this.manager = undefined;
+        }
         return this;
     }
 
