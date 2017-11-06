@@ -105,12 +105,12 @@ export class Tween extends PIXI.utils.EventEmitter {
     }
 
     from(props: TweenableProperties): Tween {
-        this.endProps = props
+        this.startProps = props
         return this
     }
 
     to(props: TweenableProperties): Tween {
-        this.startProps = props
+        this.endProps = props
         return this
     }
 

@@ -1,4 +1,4 @@
-import {Easing} from './Easing';
+import {Easing} from './Easing'
 import {Tween} from './Tween';
 //import TweenPath from './TweenPath';
 import {TweenGroup} from './TweenGroup'

@@ -5,7 +5,7 @@
   <title>Pixi.js Test</title>
   <script src="dat.gui.js"></script>
   <script src="../node_modules/pixi.js/dist/pixi.min.js"></script>
-  <script src="../build/pixi-tween.js"></script>
+  <script src="../dist/pixi-tween.iife.js"></script>
   <style>
     html, body{
       margin: 0;
@@ -29,16 +29,12 @@
     obj.anchor.set(0.5);
     stage.addChild(obj);
 
-    var raf;
-    function animate(){
-      raf = window.requestAnimationFrame(animate);
-      renderer.render(stage);
-      PIXI.tweenManager.update();
-    }
-
-    function stop(){
-      window.cancelAnimationFrame(raf);
-    }
+    var ticker = new PIXI.ticker.Ticker();
+    ticker.start();
+    ticker.add(function() {
+        renderer.render(stage);
+        PIXI.tweenManager.update(ticker.elapsedMS);
+    });
 
     //Draw margin lines
     var lines = new PIXI.Graphics()
@@ -60,6 +56,7 @@
     //Create two tweens to use differents easings in differentes axis
     var tweenX = PIXI.tweenManager.create(obj);
     var tweenY = PIXI.tweenManager.create(obj);
+    console.log(tweenX, tweenY);
 
     var TIME = 3000;
     var draw = 0;
@@ -72,6 +69,7 @@
 
       //Horizontal movement
       tweenX.time = TIME;
+      tweenX.repeat = Infinity;
       tweenX.easing = PIXI.tween.Easing.linear();
       tweenX.from({
         x: 100
@@ -79,32 +77,31 @@
       tweenX.to({
         x: 700
       });
-      tweenX.loop = true;
 
       //Vertical movement
       tweenY.time = TIME;
       tweenY.easing = easing;
+      tweenY.repeat = Infinity;
       tweenY.from({
         y: 500
       });
       tweenY.to({
         y: 100
       });
-      tweenY.loop = true;
 
       //draw the movement
       tweenY.on('update', function(delta){
-        let d = Math.ceil(delta/10);
-        if(d !== draw){
-          draw = d;
-          movement.beginFill(0xff0000);
-          movement.drawCircle(obj.x, obj.y, 1);
-          movement.endFill();
-        }
+          let d = Math.ceil(delta/10);
+          if(d !== draw){
+            draw = d;
+            movement.beginFill(0xff0000);
+            movement.drawCircle(obj.x, obj.y, 1);
+            movement.endFill();
+          }
       });
 
       tweenY.on('repeat', function(){
-        movement.clear();
+          movement.clear();
       });
 
       tweenX.start();
@@ -112,8 +109,6 @@
     }
 
     show(PIXI.tween.Easing.linear());
-    animate();
-
 
     /////GUI MENU CONTROLLER (It's not a part of this example)////
     var MyMenu = function(){
@@ -145,13 +140,15 @@
         this._easing = value;
         setTimeout(function(){
           movement.clear();
-          show(PIXI.tween.Easing[value]());
+          var easingType = PIXI.tween.Easing[value];
+          var easing = easingType();
+          console.log(easingType, easing);
+          show(easing);
         }, 100);
       }
     });
 
     var myMenu = new MyMenu();
-
     var gui = new dat.GUI();
     gui.add(myMenu, 'start');
     gui.add(myMenu, 'stop');

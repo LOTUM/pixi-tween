@@ -1,43 +1,44 @@
-export class Easing {
 
-    static linear(): Easing.Function {
+export namespace Easing {
+
+    export function linear(): Easing.Function {
         return function (t: number): number {
             return t
         }
     }
 
-    static inQuad(): Easing.Function {
+    export function inQuad(): Easing.Function {
         return function (t: number): number {
             return t * t
         }
     }
 
-    static outQuad(): Easing.Function {
+    export function outQuad(): Easing.Function {
         return function (t: number): number {
             return t * (2 - t)
         }
     }
 
-    static inOutQuad(): Easing.Function {
+    export function inOutQuad(): Easing.Function {
         return function (t: number): number {
             t *= 2
             return (t < 1) ? 0.5 * t * t : -0.5 * ( --t * ( t - 2 ) - 1 )
         }
     }
 
-    static inCubic(): Easing.Function {
+    export function inCubic(): Easing.Function {
         return function (t: number): number {
             return t * t * t
         }
     }
 
-    static outCubic(): Easing.Function {
+    export function outCubic(): Easing.Function {
         return function (t: number): number {
             return --t * t * t + 1
         }
     }
 
-    static inOutCubic(): Easing.Function {
+    export function inOutCubic(): Easing.Function {
         return function (t: number): number {
             t *= 2
             if (t < 1) return 0.5 * t * t * t
@@ -46,19 +47,19 @@ export class Easing {
         }
     }
 
-    static inQuart(): Easing.Function {
+    export function inQuart(): Easing.Function {
         return function (t: number): number {
             return t * t * t * t
         }
     }
 
-    static outQuart(): Easing.Function {
+    export function outQuart(): Easing.Function {
         return function (t: number): number {
             return 1 - ( --t * t * t * t )
         }
     }
 
-    static inOutQuart(): Easing.Function {
+    export function inOutQuart(): Easing.Function {
         return function (t: number): number {
             t *= 2
             if (t < 1) return 0.5 * t * t * t * t
@@ -67,19 +68,19 @@ export class Easing {
         }
     }
 
-    static inQuint(): Easing.Function {
+    export function inQuint(): Easing.Function {
         return function (t: number): number {
             return t * t * t * t * t
         }
     }
 
-    static outQuint(): Easing.Function {
+    export function outQuint(): Easing.Function {
         return function (t: number): number {
             return --t * t * t * t * t + 1
         }
     }
 
-    static inOutQuint(): Easing.Function {
+    export function inOutQuint(): Easing.Function {
         return function (t: number): number {
             t *= 2
             if (t < 1) return 0.5 * t * t * t * t * t
@@ -88,37 +89,37 @@ export class Easing {
         }
     }
 
-    static inSine(): Easing.Function {
+    export function inSine(): Easing.Function {
         return function (t: number): number {
             return 1 - Math.cos(t * Math.PI / 2)
         }
     }
 
-    static outSine(): Easing.Function {
+    export function outSine(): Easing.Function {
         return function (t: number): number {
             return Math.sin(t * Math.PI / 2)
         }
     }
 
-    static inOutSine(): Easing.Function {
+    export function inOutSine(): Easing.Function {
         return function (t: number): number {
             return 0.5 * ( 1 - Math.cos(Math.PI * t) )
         }
     }
 
-    static inExpo(): Easing.Function {
+    export function inExpo(): Easing.Function {
         return function (t: number): number {
             return t === 0 ? 0 : Math.pow(1024, t - 1)
         }
     }
 
-    static outExpo(): Easing.Function {
+    export function outExpo(): Easing.Function {
         return function (t: number): number {
             return t === 1 ? 1 : 1 - Math.pow(2, -10 * t)
         }
     }
 
-    static inOutExpo(): Easing.Function {
+    export function inOutExpo(): Easing.Function {
         return function (t: number): number {
             if (t === 0) return 0
             if (t === 1) return 1
@@ -128,19 +129,19 @@ export class Easing {
         }
     }
 
-    static inCirc(): Easing.Function {
+    export function inCirc(): Easing.Function {
         return function (t: number): number {
             return 1 - Math.sqrt(1 - t * t)
         }
     }
 
-    static outCirc(): Easing.Function {
+    export function outCirc(): Easing.Function {
         return function (t: number): number {
             return Math.sqrt(1 - ( --t * t ))
         }
     }
 
-    static inOutCirc(): Easing.Function {
+    export function inOutCirc(): Easing.Function {
         return function (t: number): number {
             t *= 2
             if (t < 1) return -0.5 * ( Math.sqrt(1 - t * t) - 1)
@@ -149,7 +150,7 @@ export class Easing {
     }
 
 
-    static inElastic(a = 0.1, p = 0.4): Easing.Function {
+    export function inElastic(a = 0.1, p = 0.4): Easing.Function {
         return function (t: number): number {
             let s
             if (t === 0) return 0
@@ -163,7 +164,7 @@ export class Easing {
         }
     }
 
-    static outElastic(a = 0.1, p = 0.4): Easing.Function {
+    export function outElastic(a = 0.1, p = 0.4): Easing.Function {
         return function (t: number): number {
             let s
             if (t === 0) return 0
@@ -177,7 +178,7 @@ export class Easing {
         }
     }
 
-    static inOutElastic(a = 0.1, p = 0.4): Easing.Function {
+    export function inOutElastic(a = 0.1, p = 0.4): Easing.Function {
         return function (t: number): number {
             let s
             if (t === 0) return 0
@@ -193,21 +194,21 @@ export class Easing {
         }
     }
 
-    static inBack(v: number): Easing.Function {
+    export function inBack(v: number): Easing.Function {
         return function (t: number): number {
             let s = v || 1.70158
             return t * t * ( ( s + 1 ) * t - s )
         }
     }
 
-    static outBack(v: number): Easing.Function {
+    export function outBack(v: number): Easing.Function {
         return function (t: number): number {
             let s = v || 1.70158
             return --t * t * ( ( s + 1 ) * t + s ) + 1
         }
     }
 
-    static inOutBack(v: number): Easing.Function {
+    export function inOutBack(v: number): Easing.Function {
         return function (t: number): number {
             let s = (v || 1.70158) * 1.525
             t *= 2
@@ -216,13 +217,13 @@ export class Easing {
         }
     }
 
-    static inBounce(): Easing.Function {
+    export function inBounce(): Easing.Function {
         return function (t: number): number {
             return 1 - Easing.outBounce()(1 - t)
         }
     }
 
-    static outBounce(): Easing.Function {
+    export function outBounce(): Easing.Function {
         return function (t: number): number {
             if (t < ( 1 / 2.75 )) {
                 return 7.5625 * t * t
@@ -239,7 +240,7 @@ export class Easing {
         }
     }
 
-    static inOutBounce(): Easing.Function {
+    export function inOutBounce(): Easing.Function {
         return function (t: number): number {
             if (t < 0.5) return Easing.inBounce()(t * 2) * 0.5
             return Easing.outBounce()(t * 2 - 1) * 0.5 + 0.5

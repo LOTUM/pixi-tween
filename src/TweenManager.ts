@@ -31,7 +31,7 @@ export class TweenManager extends PIXI.utils.EventEmitter {
 
     update(deltaTime: number) {
         for (let i = 0; i < this.tweens.length; i++) {
-            let tween = this.tweens[i];
+            const tween = this.tweens[i];
             if (tween.active) {
                 tween.update(deltaTime);
                 if (tween.ended && tween.expire) {

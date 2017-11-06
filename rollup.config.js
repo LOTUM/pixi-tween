@@ -28,17 +28,23 @@ export default {
     entry: "src/index.ts",
     sourcemap: true,
     external: ['pixi.js'],
+    globals: { 'pixi.js': 'PIXI' },
     plugins: plugins,
     output: [
         {
-            name: pkg.name,
+            name: '__pixiTween',
             file: 'dist/' + pkg.name + '.js',
             format: 'cjs',
         },
         {
-            name: pkg.name,
+            name: '__pixiTween',
             file: 'dist/' + pkg.name + '.es.js',
             format: 'es',
+        },
+        {
+            name: '__pixiTween',
+            file: 'dist/' + pkg.name + '.iife.js',
+            format: 'iife'
         }
     ]
 };
