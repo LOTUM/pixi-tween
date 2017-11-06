@@ -11,8 +11,8 @@ export class TweenSequence {
         this.manager = manager
     }
 
-    add(target: PIXI.DisplayObject, params: Tween.Properties | Tween.Properties[]) {
-        const tween = new Tween(target, params)
+    add(target: PIXI.DisplayObject, props: Tween.PropertyList) {
+        const tween = Tween.create(target, props)
         this.tweens.push(tween)
 
         return tween

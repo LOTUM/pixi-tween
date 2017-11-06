@@ -193,21 +193,21 @@ export class Easing {
         }
     }
 
-    static inBack(v): Easing.Function {
+    static inBack(v: number): Easing.Function {
         return function (t: number): number {
             let s = v || 1.70158
             return t * t * ( ( s + 1 ) * t - s )
         }
     }
 
-    static outBack(v): Easing.Function {
+    static outBack(v: number): Easing.Function {
         return function (t: number): number {
             let s = v || 1.70158
             return --t * t * ( ( s + 1 ) * t + s ) + 1
         }
     }
 
-    static inOutBack(v): Easing.Function {
+    static inOutBack(v: number): Easing.Function {
         return function (t: number): number {
             let s = (v || 1.70158) * 1.525
             t *= 2
@@ -248,5 +248,5 @@ export class Easing {
 }
 
 export namespace Easing {
-    export type Function = (number) => number
+    export type Function = (t: number) => number
 }

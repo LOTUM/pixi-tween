@@ -13,15 +13,15 @@ export class TweenGroup {
         this.loop = loop
     }
 
-    add(node: PIXI.DisplayObject, params: Tween.Properties | Tween.Properties[]) {
+    add(target: PIXI.DisplayObject, props: Tween.PropertyList) {
         /*const defaults = { start: false, expire: !this.loop }
-        if (Array.isArray(params)) {
-            (<TweenParameters[]>params).push(defaults)
+        if (Array.isArray(props)) {
+            (<TweenParameters[]>props).push(defaults)
         } else {
-            params = [params, defaults]
+            props = [props, defaults]
         }*/
 
-        const tween = new Tween(node, params)
+        const tween = this.manager.create(target, props)
         this.tweens.push(tween)
 
         return tween
@@ -38,7 +38,7 @@ export class TweenGroup {
                 return prev.endTime > current.endTime ? prev : current
             }
         }
-        this.tweens.reduce(filter).on(event as String, callback)
+        this.tweens.reduce(filter).on(event, callback)
     }
 
     promise(event: TweenGroup.Event): Promise<void> {

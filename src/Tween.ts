@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js'
-import Easing from './Easing'
-import TweenManager from './TweenManager'
+
+import {Easing} from './Easing'
+import {TweenManager} from './TweenManager'
 
 export interface TweenableProperties {
     x?: number
@@ -19,10 +20,12 @@ const DefaultProperties: Tween.Properties = {
     easing: Easing.linear(),
     repeat: 0,
     yoyo: false,
-    loop: false,
-    active: false,
-    expire: true
+    active: false
 }
+
+/**
+ * @namespace PIXI.tween
+ */
 
 export class Tween extends PIXI.utils.EventEmitter {
 
@@ -64,15 +67,11 @@ export class Tween extends PIXI.utils.EventEmitter {
         return Tween.create(node, params).promise(Tween.Events.end)
     }
 
-    constructor(target: PIXI.DisplayObject, props: Tween.Properties, manager?: TweenManager) {
+    constructor(target: PIXI.DisplayObject, props: Tween.Properties) {
         super()
 
         this.target = target
-        this.apply(props)
-
-        if (manager) {
-            manager.add(this)
-        }
+        this.set(props)
     }
 
     get endTime() {
@@ -123,7 +122,7 @@ export class Tween extends PIXI.utils.EventEmitter {
         return this
     }
 
-    apply(props: Tween.Properties) {
+    set(props: Tween.Properties) {
         //console.log('Tween: merged params', Array.isArray(params), merged)
         this.time = props.time
         this.delay = props.delay
@@ -304,7 +303,7 @@ export class Tween extends PIXI.utils.EventEmitter {
         }*/
     }
 
-    private apply(time) {
+    private apply(time: number) {
         recursiveApplyTween(this.endProps, this.startProps, this.target, time, this.elapsedTime, this.easing)
         /*if (this.path) {
             let time = (this.pingPong) ? this.time / 2 : this.time
@@ -342,9 +341,11 @@ export namespace Tween {
         from?: TweenableProperties
         to?: TweenableProperties
     }
+
+    export type PropertyList = Properties | Properties[]
 }
 
-function recursiveApplyTween(to, from, target, time, elapsed, easing) {
+function recursiveApplyTween(to: any, from: any, target: any, time: number, elapsed: number, easing: Easing.Function) {
     for (let k in to) {
         if (!isObject(to[k])) {
             let b = from[k]
@@ -358,7 +359,7 @@ function recursiveApplyTween(to, from, target, time, elapsed, easing) {
     }
 }
 
-function parseRecursiveData(to, from, target) {
+function parseRecursiveData(to: any, from: any, target: any) {
     for (let prop in to) {
         if (from[prop] !== 0 && !from[prop]) {
             if (!isObject(target[prop])) {
@@ -371,7 +372,7 @@ function parseRecursiveData(to, from, target) {
     }
 }
 
-function isObject(obj) {
+function isObject(obj: any) {
     return Object.prototype.toString.call(obj) === '[object Object]'
 }
 
@@ -388,8 +389,8 @@ function mergeProps(target: any, source: any): any {
     }
 }
 
-function createProps(props: TweenableProperties): any {
-    let mapped = {}
+function createProps(props: any): any {
+    let mapped: any = {}
     for (const name in props) {
         if (name === "scale") {
             mapped[name] = {x: props[name], y: props[name]}
@@ -401,16 +402,16 @@ function createProps(props: TweenableProperties): any {
     return mapped
 }
 
-function getProps(target: PIXI.DisplayObject, props: string[]): any {
-    const state = {}
+function getProps(target: any, props: string[]): any {
+    const merged: any = {}
     for (const prop of props) {
         if (prop === "scale") {
-            state[prop] = {x: target[prop].x, y: target[prop].y}
+            merged[prop] = {x: target[prop].x, y: target[prop].y}
         } else {
-            state[prop] = target[prop]
+            merged[prop] = target[prop]
         }
     }
 
     //console.log('Tween: get state', state)
-    return state
+    return merged
 }

@@ -20,7 +20,7 @@ export class TweenManager extends PIXI.utils.EventEmitter {
             this.update(ticker.elapsedMS)
         });
 
-        this.on(TweenManager.Events.interactive, (interactive) => {
+        this.on(TweenManager.Events.interactive, (interactive: boolean) => {
             if (interactive) {
                 ticker.start()
             } else {
@@ -59,8 +59,8 @@ export class TweenManager extends PIXI.utils.EventEmitter {
         return tweens;
     }
 
-    create(target) {
-        return new Tween(target, this);
+    create(target: PIXI.DisplayObject, props: Tween.PropertyList) {
+        return this.add(Tween.create(target, props));
     }
 
     run(tween: Tween): Promise<any> {
@@ -69,17 +69,19 @@ export class TweenManager extends PIXI.utils.EventEmitter {
         return tween.promise(Tween.Events.end)
     }
 
-    add(tween: Tween) {
-        tween.manager = this;
-        this.tweens.push(tween);
+    add(tween: Tween): Tween {
+        tween.manager = this
+        this.tweens.push(tween)
         this.toggle(true)
+
+        return tween
     }
 
     remove(tween: Tween) {
         this.tweensToDelete.push(tween);
     }
 
-    private dump(tween) {
+    private dump(tween: Tween) {
         let index = this.tweens.indexOf(tween);
         if (index !== -1) {
             this.tweens.splice(index, 1);
