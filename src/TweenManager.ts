@@ -59,7 +59,7 @@ export class TweenManager extends PIXI.utils.EventEmitter {
         return tweens;
     }
 
-    create(target: PIXI.DisplayObject, props: Tween.PropertyList) {
+    create(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]) {
         return this.add(Tween.create(target, props));
     }
 

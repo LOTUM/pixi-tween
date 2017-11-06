@@ -12,12 +12,7 @@ import {TweenManager} from './TweenManager';
     return this;
 }*/
 
-/**
- * @namespace PIXI.tween
- * @type {{TweenManager: TweenManager; Tween: Tween; Easing: Easing}}
- */
-
-const exported = {
+const exports = {
     Easing: Easing,
     Tween: Tween,
     TweenGroup: TweenGroup,
@@ -27,24 +22,13 @@ const exported = {
 };
 
 declare module PIXI {
-    var tween: typeof exported
+    var tween: typeof exports
     var tweenManager: TweenManager
 }
 
 Object.assign(PIXI, {
     tweenManager: new TweenManager(),
-    tween: exported
+    tween: exports
 })
-console.log(PIXI)
 
-/*namespace PIXI {
-
-    export let tweenManager: TweenManager
-
-    if (!tweenManager) {
-        tweenManager = new TweenManager();
-        tween = tween;
-    }
-}*/
-
-export default exported;
+export default exports;

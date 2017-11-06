@@ -13,7 +13,7 @@ export class TweenGroup {
         this.loop = loop
     }
 
-    add(target: PIXI.DisplayObject, props: Tween.PropertyList) {
+    add(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]) {
         /*const defaults = { start: false, expire: !this.loop }
         if (Array.isArray(props)) {
             (<TweenParameters[]>props).push(defaults)

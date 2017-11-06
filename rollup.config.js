@@ -25,7 +25,7 @@ if (!process.env.DEV) {
  */
 export default {
     //name: "__pixiTween",
-    entry: "src/index.ts",
+    input: "src/index.ts",
     sourcemap: true,
     external: ['pixi.js'],
     globals: { 'pixi.js': 'PIXI' },

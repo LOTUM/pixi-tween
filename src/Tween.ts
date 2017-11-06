@@ -23,10 +23,6 @@ const DefaultProperties: Tween.Properties = {
     active: false
 }
 
-/**
- * @namespace PIXI.tween
- */
-
 export class Tween extends PIXI.utils.EventEmitter {
 
     public readonly target: PIXI.DisplayObject
@@ -341,8 +337,6 @@ export namespace Tween {
         from?: TweenableProperties
         to?: TweenableProperties
     }
-
-    export type PropertyList = Properties | Properties[]
 }
 
 function recursiveApplyTween(to: any, from: any, target: any, time: number, elapsed: number, easing: Easing.Function) {
