@@ -28,8 +28,8 @@
       .generateTexture();
 
     var obj = new PIXI.Sprite(t);
-    obj.tweenX = PIXI.tweenManager.createTween(obj);
-    obj.tweenY = PIXI.tweenManager.createTween(obj);
+    obj.tweenX = PIXI.tweenManager.create(obj);
+    obj.tweenY = PIXI.tweenManager.create(obj);
     obj.anchor.set(0.5);
     stage.addChild(obj);
 

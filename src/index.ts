@@ -6,11 +6,11 @@ import TweenPath from './TweenPath';
 import Easing from './Easing';
 
 //extend pixi graphics to draw tweenPaths
-PIXI.Graphics.prototype.drawPath = function (path) {
+/*PIXI.Graphics.prototype.drawPath = function (path) {
     path.parsePoints();
     this.drawShape(path.polygon);
     return this;
-}
+}*/
 
 let tween = {
     TweenManager: TweenManager,
@@ -19,9 +19,9 @@ let tween = {
     TweenPath: TweenPath
 };
 
-if (!PIXI.tweenManager) {
+/*if (!PIXI.tweenManager) {
     PIXI.tweenManager = new TweenManager();
     PIXI.tween = tween;
-}
+}*/
 
 export default tween;

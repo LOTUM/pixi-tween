@@ -58,8 +58,8 @@
     stage.addChild(movement);
 
     //Create two tweens to use differents easings in differentes axis
-    var tweenX = PIXI.tweenManager.createTween(obj);
-    var tweenY = PIXI.tweenManager.createTween(obj);
+    var tweenX = PIXI.tweenManager.create(obj);
+    var tweenY = PIXI.tweenManager.create(obj);
 
     var TIME = 3000;
     var draw = 0;

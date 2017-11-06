@@ -52,7 +52,7 @@
     stage.addChild(sprite);
 
     //Tween animation
-    var tween = PIXI.tweenManager.createTween(sprite);
+    var tween = PIXI.tweenManager.create(sprite);
     tween.path = path;
     tween.time = 13000;
     tween.easing = PIXI.tween.Easing.outBounce();
@@ -61,7 +61,7 @@
     tween.start();
 
     //Add some visual animations :)
-    var tween2 = PIXI.tweenManager.createTween(sprite);
+    var tween2 = PIXI.tweenManager.create(sprite);
     tween2.from({
       rotation: 0,
       scale: {
