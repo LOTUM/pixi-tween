@@ -1,86 +1,91 @@
 
-import {Tween} from './Tween'
-import {TweenManager} from './TweenManager'
+module pixi_tween {
 
-export class TweenGroup {
+    export class TweenGroup {
 
-    public readonly loop: boolean
-    private readonly manager: TweenManager
-    private readonly tweens: Tween[] = []
+        public readonly loop: boolean
+        private readonly manager: TweenManager
+        private readonly tweens: Tween[] = []
 
-    constructor(manager: TweenManager, loop: boolean = false) {
-        this.manager = manager
-        this.loop = loop
-    }
-
-    add(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]) {
-        /*const defaults = { start: false, expire: !this.loop }
-        if (Array.isArray(props)) {
-            (<TweenParameters[]>props).push(defaults)
-        } else {
-            props = [props, defaults]
-        }*/
-
-        const tween = this.manager.create(target, props)
-        this.tweens.push(tween)
-
-        return tween
-    }
-
-    on(event: TweenGroup.Event, callback: Function) {
-        let filter
-        if (event == TweenGroup.Event.start) {
-            filter = (prev: Tween, current: Tween) => {
-                return prev.delay < current.delay ? prev : current
-            }
-        } else {
-            filter = (prev: Tween, current: Tween) => {
-                return prev.endTime > current.endTime ? prev : current
-            }
+        constructor(manager: TweenManager, props?: TweenGroup.Properties) {
+            this.manager = manager
+            this.loop = props.loop
         }
-        this.tweens.reduce(filter).on(event, callback)
-    }
 
-    promise(event: TweenGroup.Event): Promise<void> {
-        return new Promise((resolve) => {
-            this.on(event, resolve)
-        })
-    }
+        add(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]) {
+            /*const defaults = { start: false, expire: !this.loop }
+            if (Array.isArray(props)) {
+                (<TweenParameters[]>props).push(defaults)
+            } else {
+                props = [props, defaults]
+            }*/
 
-    start(): TweenGroup {
-        if (this.loop) {
-            this.on(TweenGroup.Event.end, () => {
-                this.tweens.forEach((tween, index) => {
-                    tween.reset()
-                    tween.start()
-                })
+            const tween = this.manager.create(target, props)
+            this.tweens.push(tween)
+
+            return tween
+        }
+
+        on(event: TweenGroup.Event, callback: Function) {
+            let filter
+            if (event == 'start') {
+                filter = (prev: Tween, current: Tween) => {
+                    return prev.delay < current.delay ? prev : current
+                }
+            } else {
+                filter = (prev: Tween, current: Tween) => {
+                    return prev.endTime > current.endTime ? prev : current
+                }
+            }
+            this.tweens.reduce(filter).on(event.toString(), callback)
+        }
+
+        promise(event: TweenGroup.Event): Promise<any> {
+            return new Promise((resolve) => {
+                this.on(event, resolve)
             })
         }
 
-        this.tweens.forEach((tween) => {
-            if (!tween.manager) {
-                this.manager.add(tween)
+        start(): TweenGroup {
+            if (this.loop) {
+                this.on('end', () => {
+                    this.tweens.forEach((tween, index) => {
+                        tween.reset()
+                        tween.start()
+                    })
+                })
             }
-            tween.start()
-        })
 
-        return this
+            this.tweens.forEach((tween) => {
+                if (!tween.manager) {
+                    this.manager.add(tween)
+                }
+                tween.start()
+            })
+
+            return this
+        }
+
+        stop() {
+            this.tweens.forEach(tween => tween.stop())
+        }
+
+        remove() {
+            this.tweens.forEach((tween) => {
+                tween.remove()
+            })
+        }
     }
 
-    stop() {
-        this.tweens.forEach(tween => tween.stop())
-    }
+    export namespace TweenGroup {
+        export type Event = 'start' | 'end'
+        export const Events = {
+            start: 'start',
+            end: 'end'
+        }
 
-    remove() {
-        this.tweens.forEach((tween) => {
-            tween.remove()
-        })
-    }
-}
-
-export namespace TweenGroup {
-    export enum Event {
-        start = "start",
-        end = "end"
+        export interface Properties {
+            loop: boolean
+        }
     }
 }

@@ -2,10 +2,13 @@
   "name": "pixi-tween",
   "version": "2.0.0",
   "description": "pixi-tween is a plugin for Pixi.js v4.1 or higher to create ...",
-  "main": "dist/pixi-tween.js",
-  "module": "dist/pixi-tween.es.js",
-  "types": "pixi-tween.d.ts",
-  "author": "Joachim Böhmer <boehmer@lotum.com> (http://lotum.com)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "Joachim Böhmer",
+  "contributors": [
+    "Joachim Böhmer <boehmer@lotum.com>",
+    "Benjamin Rühl <ruehl@lotum.com>"
+  ],
   "license": "MIT",
   "keywords": [
     "pixi",
@@ -20,29 +23,23 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "typings": "node scripts/typings.js",
     "clean": "rimraf dist/**",
     "prebuild": "npm run clean",
-    "build": "rollup -c",
-    "watch": "npm run build -- --environment DEV --watch",
+    "build": "tsc && npm run typings",
+    "watch": "tsc -w",
     "install": "npm run build"
   },
-  "devDependencies": {
+  "dependencies": {
     "@types/pixi.js": "^4.5.7",
-    "babel-core": "^6.26.0",
-    "babel-plugin-external-helpers": "^6.22.0",
-    "babel-preset-env": "^1.6.1",
+    "tmp": "0.0.33"
+  },
+  "devDependencies": {
+    "fs": "0.0.1-security",
+    "glob": "~7.1.1",
     "pixi.js": "^4.6.0",
     "rimraf": "^2.6.2",
-    "rollup": "^0.50.0",
-    "rollup-plugin-babel": "^3.0.2",
-    "rollup-plugin-commonjs": "^8.2.6",
-    "rollup-plugin-typescript2": "^0.8.0",
-    "rollup-plugin-uglify-es": "0.0.1",
-    "rollup-watch": "^4.3.1",
-    "tslint": "^5.8.0",
+    "tmp": "0.0.33",
     "typescript": "^2.6.1"
-  },
-  "peerDependencies": {
-    "pixi.js": "^4.6.0"
   }
 }
