@@ -174,16 +174,10 @@ export class Tween extends PIXI.utils.EventEmitter {
         this.ended = false
 
         if (this.yoyo && this.reversed) {
-            /*let _to = this._to
-            let _from = this._from
-            this._to = _from
-            this._from = _to*/
             [this.startProps, this.endProps] = [this.endProps, this.startProps]
             this.reversed = false
         }
 
-        //console.log
-        //this.updateProps(0)
         return this
     }
 
@@ -215,25 +209,25 @@ export class Tween extends PIXI.utils.EventEmitter {
             this.emit('update', realElapsed)
 
             if (ended) {
-                /*if (this.yoyo && !this.reversed) {
+                if (this.yoyo && !this.reversed) {
                     this.reversed = true;
                     [this.startProps, this.endProps] = [this.endProps, this.startProps]
-
+                    this.updateInterpolators()
                     this.emit('reversed')
                     this.elapsedTime = 0
                     return
-                }*/
+                }
 
                 if (this.repeat && this.repeat > this.repeatCount) {
                     this.repeatCount++
                     this.emit('repeat', this.repeatCount)
                     this.elapsedTime = 0
 
-                    /*if (this.yoyo && this.reversed) {
+                    if (this.yoyo && this.reversed) {
                         [this.startProps, this.endProps] = [this.endProps, this.startProps]
-
+                        this.updateInterpolators()
                         this.reversed = false
-                    }*/
+                    }
                     return
                 }
 
@@ -266,8 +260,13 @@ export class Tween extends PIXI.utils.EventEmitter {
         }
 
         this.startProps = startValues
-        this.endProps = endValues;
+        this.endProps = endValues
 
+        this.updateInterpolators()
+    }
+
+    //todo: check what could be a better approach to avoid reinitialization of interpolators (e.g. YoyoInterpolator)
+    private updateInterpolators() {
         this.interpolators = {}
         for (let key in this.endProps) {
             if (!isEqual(this.endProps[key], this.startProps[key])) {
