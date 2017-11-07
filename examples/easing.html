@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Pixi.js Test</title>
-  <script src="dat.gui.js"></script>
+  <script src="dat.gui.min.js"></script>
   <script src="../node_modules/pixi.js/dist/pixi.min.js"></script>
   <script src="../dist/pixi-tween.iife.js"></script>
   <style>
@@ -68,7 +68,7 @@
       tweenY.stop().clear();
 
       //Horizontal movement
-      tweenX.time = TIME;
+      tweenX.duration = TIME;
       tweenX.repeat = Infinity;
       tweenX.easing = PIXI.tween.Easing.linear();
       tweenX.from({
@@ -79,7 +79,7 @@
       });
 
       //Vertical movement
-      tweenY.time = TIME;
+      tweenY.duration = TIME;
       tweenY.easing = easing;
       tweenY.repeat = Infinity;
       tweenY.from({

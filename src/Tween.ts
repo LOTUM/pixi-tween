@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js'
 
 import {Easing} from './Easing'
 import {TweenManager} from './TweenManager'
+import {ColorInterpolator, Interpolator, PointInterpolator, ValueInterpolator} from './Interpolator'
 
 export interface TweenableProperties {
     x?: number
@@ -9,18 +10,20 @@ export interface TweenableProperties {
     width?: number
     height?: number
     rotation?: number
-    scale?: number | PIXI.Point
+    scale?: number | PIXI.PointLike
+    skew?: PIXI.PointLike
     tint?: number
     alpha?: number
 }
 
 const DefaultProperties: Tween.Properties = {
-    time: 1000,
+    active: false,
+    expire: true,
+    duration: 1000,
     delay: 0,
     easing: Easing.linear(),
     repeat: 0,
-    yoyo: false,
-    active: false
+    yoyo: false
 }
 
 export class Tween extends PIXI.utils.EventEmitter {
@@ -29,7 +32,7 @@ export class Tween extends PIXI.utils.EventEmitter {
     public manager: TweenManager
 
     public active: boolean
-    public time: number
+    public duration: number
     public delay: number
     public easing: Easing.Function
     public expire: boolean
@@ -45,6 +48,8 @@ export class Tween extends PIXI.utils.EventEmitter {
     private elapsedTime: number
     private repeatCount: number
     private reversed: boolean
+
+    private interpolators: { [prop: string]: Interpolator<any> }
 
     static create(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]) {
         let merged: Tween.Properties = {...DefaultProperties}
@@ -67,11 +72,11 @@ export class Tween extends PIXI.utils.EventEmitter {
         super()
 
         this.target = target
-        this.set(props)
+        this.apply(props)
     }
 
     get endTime() {
-        return this.delay + this.time
+        return this.delay + this.duration
     }
 
     promise(event: string): Promise<void> {
@@ -101,6 +106,7 @@ export class Tween extends PIXI.utils.EventEmitter {
     }
 
     from(props: TweenableProperties): Tween {
+        //console.log("Tween: set from", props);
         this.startProps = props
         return this
     }
@@ -118,51 +124,28 @@ export class Tween extends PIXI.utils.EventEmitter {
         return this
     }
 
-    set(props: Tween.Properties) {
+    apply(props: Tween.Properties): Tween {
         //console.log('Tween: merged params', Array.isArray(params), merged)
-        this.time = props.time
+        this.duration = props.duration
         this.delay = props.delay
         this.easing = props.easing
         this.repeat = props.repeat
         this.yoyo = props.yoyo
-        this.expire = true //todo: check if we can omit expire
+        this.expire = props.expire
 
-        const fromState = props.from ? createProps(props.from) : {}
-        const toState = props.to ? createProps(props.to) : {}
+        this.from(props.from)
+        this.to(props.to)
 
-        const fromKeys = Object.keys(fromState)
-        const toKeys = Object.keys(toState)
-
-        //console.log('Tween: initial states', fromState, fromKeys, toState, toKeys)
-        const missingFromKeys = toKeys.filter(key => fromKeys.indexOf(key) < 0)
-        if (missingFromKeys.length) {
-            Object.assign(fromState, getProps(this.target, missingFromKeys))
-            //console.log('Tween: props from state', missingFromKeys, fromState)
-        }
-
-        const missingToKeys = fromKeys.filter(key => toKeys.indexOf(key) < 0)
-        if (missingToKeys.length) {
-            Object.assign(toState, getProps(this.target, missingToKeys))
-            //console.log('Tween: props to state', missingToKeys, toState)
-        }
-
-        //console.log('Tween: apply state', fromState);
-        this.from(fromState)
-        this.to(toState)
-
-        if (props.active) {
-            Object.assign(this.target, fromState)
-            this.active = true
-        }
+        return this;
     }
 
     clear(): Tween {
-        this.time = 0
         this.active = false
+        this.duration = 0
+        this.delay = 0
         this.easing = Easing.linear()
         this.expire = false
         this.repeat = 0
-        this.delay = 0
         this.yoyo = false
         this.started = false
         this.ended = false
@@ -184,7 +167,7 @@ export class Tween extends PIXI.utils.EventEmitter {
 
     reset(): Tween {
         this.elapsedTime = 0
-        this.repeat = 0
+        this.repeatCount = 0
         this.delayTime = 0
 
         this.started = false
@@ -199,6 +182,8 @@ export class Tween extends PIXI.utils.EventEmitter {
             this.reversed = false
         }
 
+        //console.log
+        //this.updateProps(0)
         return this
     }
 
@@ -218,51 +203,37 @@ export class Tween extends PIXI.utils.EventEmitter {
             this.emit('start')
         }
 
-        let time = (this.yoyo) ? this.time / 2 : this.time
+        let time = (this.yoyo) ? this.duration / 2 : this.duration
         if (time > this.elapsedTime) {
             let t = this.elapsedTime + deltaTime
             let ended = (t >= time)
 
             this.elapsedTime = ended ? time : t
-            this.apply(time)
+            this.updateProps(time)
 
             let realElapsed = this.yoyo ? time + this.elapsedTime : this.elapsedTime
             this.emit('update', realElapsed)
 
             if (ended) {
-                if (this.yoyo && !this.reversed) {
+                /*if (this.yoyo && !this.reversed) {
                     this.reversed = true;
                     [this.startProps, this.endProps] = [this.endProps, this.startProps]
-
-                    /*if (this.path) {
-                        endProps = this.pathTo
-                        startProps = this.pathFrom
-                        this.pathTo = startProps
-                        this.pathFrom = endProps
-                    }*/
 
                     this.emit('reversed')
                     this.elapsedTime = 0
                     return
-                }
+                }*/
 
                 if (this.repeat && this.repeat > this.repeatCount) {
                     this.repeatCount++
                     this.emit('repeat', this.repeatCount)
                     this.elapsedTime = 0
 
-                    if (this.yoyo && this.reversed) {
+                    /*if (this.yoyo && this.reversed) {
                         [this.startProps, this.endProps] = [this.endProps, this.startProps]
 
-                        /*if (this.path) {
-                            endProps = this.pathTo
-                            startProps = this.pathFrom
-                            this.pathTo = startProps
-                            this.pathFrom = endProps
-                        }*/
-
                         this.reversed = false
-                    }
+                    }*/
                     return
                 }
 
@@ -274,44 +245,58 @@ export class Tween extends PIXI.utils.EventEmitter {
     }
 
     private canUpdate() {
-        return (this.time && this.active && this.target && this.target.transform)
+        return (this.duration && this.active && this.target && this.target.transform)
     }
 
     private parseData() {
-        if (this.started) {
-            return
+        const startValues = {...this.startProps}
+        const endValues = {...this.endProps}
+
+        const startProps = Object.keys(startValues)
+        const endProps = Object.keys(endValues)
+
+        const missingStartProps = endProps.filter(key => startProps.indexOf(key) < 0)
+        if (missingStartProps.length) {
+            Object.assign(startValues, getProps(this.target, missingStartProps))
         }
 
-        if (!this.startProps) {
-            this.startProps = {}
+        const missingEndProps = startProps.filter(key => endProps.indexOf(key) < 0)
+        if (missingEndProps.length) {
+            Object.assign(endValues, getProps(this.target, missingEndProps))
         }
 
-        parseRecursiveData(this.endProps, this.startProps, this.target)
-        /*if (this.path) {
-            let distance = this.path.totalDistance()
-            if (this.pathReverse) {
-                this.pathFrom = distance
-                this.pathTo = 0
-            } else {
-                this.pathFrom = 0
-                this.pathTo = distance
+        this.startProps = startValues
+        this.endProps = endValues;
+
+        this.interpolators = {}
+        for (let key in this.endProps) {
+            if (!isEqual(this.endProps[key], this.startProps[key])) {
+                switch (key) {
+                    case 'scale':
+                    case 'skew':
+                        this.interpolators[key] = new PointInterpolator(this.startProps[key], this.endProps[key]);
+                        break;
+                    case 'tint':
+                        this.interpolators[key] = new ColorInterpolator(this.startProps[key], this.endProps[key]);
+                        break;
+                    default:
+                        this.interpolators[key] = new ValueInterpolator(this.startProps[key], this.endProps[key]);
+                        break;
+                }
             }
-        }*/
+        }
+
+        console.log('interpolators', Object.keys(this.interpolators));
     }
 
-    private apply(time: number) {
-        recursiveApplyTween(this.endProps, this.startProps, this.target, time, this.elapsedTime, this.easing)
-        /*if (this.path) {
-            let time = (this.pingPong) ? this.time / 2 : this.time
-            let b = this.pathFrom
-            let c = this.pathTo - this.pathFrom
-            let d = time
-            let t = this._elapsedTime / d
+    private updateProps(time: number) {
+        const t = this.elapsedTime / time
+        const m = this.easing(t)
 
-            let distance = b + (c * this.easing(t))
-            let pos = this.path.getPointAtDistance(distance)
-            this.target.position.set(pos.x, pos.y)
-        }*/
+        //console.log('Tween: update props')
+        for (const prop in this.interpolators) {
+            (<any>this.target)[prop] = this.interpolators[prop].interpolate(m)
+        }
     }
 }
 
@@ -328,46 +313,24 @@ export namespace Tween {
     }
 
     export interface Properties {
-        time?: number
+        active?: boolean
+        expire?: boolean
+        duration?: number
         delay?: number
         easing?: Easing.Function
         repeat?: number
         yoyo?: boolean
-        active?: boolean
         from?: TweenableProperties
         to?: TweenableProperties
     }
 }
 
-function recursiveApplyTween(to: any, from: any, target: any, time: number, elapsed: number, easing: Easing.Function) {
-    for (let k in to) {
-        if (!isObject(to[k])) {
-            let b = from[k]
-            let c = to[k] - from[k]
-            let d = time
-            let t = elapsed / d
-            target[k] = b + (c * easing(t))
-        } else {
-            recursiveApplyTween(to[k], from[k], target[k], time, elapsed, easing)
-        }
-    }
-}
-
-function parseRecursiveData(to: any, from: any, target: any) {
-    for (let prop in to) {
-        if (from[prop] !== 0 && !from[prop]) {
-            if (!isObject(target[prop])) {
-                from[prop] = target[prop]
-            } else {
-                from[prop] = JSON.parse(JSON.stringify(target[prop]))
-                parseRecursiveData(to[prop], from[prop], target[prop])
-            }
-        }
-    }
-}
-
-function isObject(obj: any) {
+function isObject(obj: any): boolean {
     return Object.prototype.toString.call(obj) === '[object Object]'
+}
+
+function isEqual(obj1: any, obj2: any): boolean {
+    return JSON.stringify(obj1) === JSON.stringify(obj2)
 }
 
 function mergeProps(target: any, source: any): any {
@@ -383,29 +346,11 @@ function mergeProps(target: any, source: any): any {
     }
 }
 
-function createProps(props: any): any {
-    let mapped: any = {}
-    for (const name in props) {
-        if (name === "scale") {
-            mapped[name] = {x: props[name], y: props[name]}
-        } else {
-            mapped[name] = props[name]
-        }
-    }
-
-    return mapped
-}
-
 function getProps(target: any, props: string[]): any {
     const merged: any = {}
-    for (const prop of props) {
-        if (prop === "scale") {
-            merged[prop] = {x: target[prop].x, y: target[prop].y}
-        } else {
-            merged[prop] = target[prop]
-        }
-    }
+    props.forEach((prop) => {
+        merged[prop] = target[prop]
+    })
 
-    //console.log('Tween: get state', state)
     return merged
 }

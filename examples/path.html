@@ -54,7 +54,7 @@
     //Tween animation
     var tween = PIXI.tweenManager.create(sprite);
     tween.path = path;
-    tween.time = 13000;
+    tween.duration = 13000;
     tween.easing = PIXI.tween.Easing.outBounce();
     //tween.pathReverse  =true;
     tween.loop = true;
@@ -74,7 +74,7 @@
     });
     tween2.loop = true;
     tween2.pingPong = true;
-    tween2.time = 3000;
+    tween2.duration = 3000;
     tween2.start();
 
     animate();

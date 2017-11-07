@@ -69,7 +69,7 @@
       obj.tweenX.stop().clear();
       obj.tweenY.stop().clear();
 
-      obj.tweenX.time = TIME;
+      obj.tweenX.duration = TIME;
       obj.tweenX.easing = PIXI.tween.Easing.linear();
       obj.tweenX.from({
         x: point1.x
@@ -79,7 +79,7 @@
       });
       obj.tweenX.loop = true;
 
-      obj.tweenY.time = TIME;
+      obj.tweenY.duration = TIME;
       obj.tweenY.easing = easing;
       obj.tweenY.from({
         y: point1.y

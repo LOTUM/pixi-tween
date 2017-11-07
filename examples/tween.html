@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pixi.js Test</title>
+  <script src="dat.gui.min.js"></script>
+  <script src="../node_modules/pixi.js/dist/pixi.min.js"></script>
+  <script src="../dist/pixi-tween.iife.js"></script>
+  <style>
+    html, body{
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    var renderer = new PIXI.autoDetectRenderer({ width: 800, height: 600, antialias: true });
+    document.body.appendChild(renderer.view);
+    var stage = new PIXI.Container();
+
+    var ticker = new PIXI.ticker.Ticker();
+    ticker.start();
+    ticker.add(function() {
+        //console.log("ticker update");
+        renderer.render(stage);
+        PIXI.tweenManager.update(ticker.elapsedMS);
+    });
+
+    class Controller {
+
+        constructor() {
+            this._easing = "linear";
+            this._props = {
+                expire: false,
+                duration: 1000,
+                delay: 0,
+                easing: PIXI.tween.Easing.linear(),
+                repeat: Infinity,
+                from: {
+                    x: 200,
+                    y: 200,
+                    width: 60,
+                    height: 60,
+                    rotation: 0,
+                    scale: new PIXI.Point(1, 1),
+                    skew: new PIXI.Point(0, 0),
+                    tint: 0xf0f000,
+                    alpha: 1
+                },
+                to: {
+                    x: 300,
+                    y: 200,
+                    width: 60,
+                    height: 60,
+                    rotation: 0,
+                    scale: new PIXI.Point(1, 1),
+                    skew: new PIXI.Point(0, 0),
+                    tint: 0xf0f000,
+                    alpha: 1
+                }
+            };
+
+            var texture = new PIXI.Graphics()
+                .beginFill(0xffffff)
+                .drawRect(0, 0, 60, 60)
+                .endFill()
+                .generateTexture();
+
+            //this._box = PIXI.Sprite.fromImage('bunny.png');
+            this._box = new PIXI.Sprite(texture);
+            this._box.anchor.set(0.5);
+            this._box.tint = this._props.from.tint;
+            this._box.x = this._props.from.x;
+            this._box.y = this._props.from.y;
+            stage.addChild(this._box);
+
+            this._tween = PIXI.tweenManager.create(this._box, this._props);
+            this._tween.on(PIXI.tween.Tween.Events.end, () => {
+                this._tween.reset();
+            });
+
+            this._update()
+        }
+
+        get duration() {
+            return this._props.duration;
+        }
+        set duration(value) {
+            this._props.duration = value;
+            this._update();
+        }
+
+        get delay() {
+            return this._props.delay;
+        }
+        set delay(value) {
+            this._props.delay = value;
+            this._update();
+        }
+
+        get repeat() {
+            return this._props.repeat !== Infinity ? this._props.repeat : -1;
+        }
+        set repeat(value) {
+            this._props.repeat = value >= 0 ? value : Infinity;
+            this._update();
+        }
+
+        get easing() {
+            return this._easing;
+        }
+
+        set easing(value) {
+            this._easing = value;
+            this._props.easing = PIXI.tween.Easing[value]();
+            this._update();
+        }
+
+        get x() {
+            return this._props.to.x - this._props.from.x;
+        }
+
+        set x(value) {
+            this._props.to.x = this._props.from.x + value;
+            this._update();
+        }
+
+        get y() {
+            return this._props.to.y - this._props.from.y;
+        }
+
+        set y(value) {
+            this._props.to.y = this._props.from.y + value;
+            this._update();
+        }
+
+        get width() {
+            return this._props.to.width;
+        }
+
+        set width(value) {
+            this._props.to.width = value;
+            this._update();
+        }
+
+        get height() {
+            return this._props.to.height;
+        }
+
+        set height(value) {
+            this._props.to.height = value;
+            this._update();
+        }
+
+        get rotation() {
+            return this._props.to.rotation / Math.PI * 180;
+        }
+
+        set rotation(value) {
+            this._props.to.rotation = value / 180 * Math.PI;
+            this._update();
+        }
+
+        get scaleX() {
+            return this._props.to.scale.x;
+        }
+
+        set scaleX(value) {
+            this._props.to.scale.x = value;
+            this._update();
+        }
+
+        get scaleY() {
+            return this._props.to.scale.y;
+        }
+
+        set scaleY(value) {
+            this._props.to.scale.y = value;
+            this._update();
+        }
+
+        get skewX() {
+            return this._props.to.skew.x / Math.PI * 180;
+        }
+
+        set skewX(value) {
+            this._props.to.skew.x = value / 180 * Math.PI;
+            this._update();
+        }
+
+        get skewY() {
+            return this._props.to.skew.y / Math.PI * 180;
+        }
+
+        set skewY(value) {
+            this._props.to.skew.y = value / 180 * Math.PI;
+            this._update();
+        }
+
+        get tint() {
+            return '#' + this._props.to.tint.toString(16);
+        }
+
+        set tint(value) {
+            this._props.to.tint = parseInt(value.substring(1), 16);
+            this._update();
+        }
+
+        get alpha() {
+            return this._props.to.alpha;
+        }
+
+        set alpha(value) {
+            this._props.to.alpha = value;
+            this._update();
+        }
+
+        start() {
+            this._tween.start();
+        }
+        stop() {
+            this._tween.stop()
+        }
+        reset() {
+            this._box.x = this._props.from.x;
+            this._box.y = this._props.from.y;
+            this._tween.reset()
+        }
+
+        _update() {
+            console.log("tween update", this._props);
+            this._tween
+                .stop()
+                .clear()
+                .apply(this._props)
+                .start();
+        }
+    }
+
+    var gui = new dat.GUI();
+    var controller = new Controller();
+
+    gui.add(controller, 'start');
+    gui.add(controller, 'stop');
+    gui.add(controller, 'reset');
+    gui.add(controller, 'duration').min(0);
+    gui.add(controller, 'delay').min(0);
+    gui.add(controller, 'repeat').min(-1);
+    gui.add(controller, 'easing', Object.keys(PIXI.tween.Easing));
+    gui.add(controller, 'x');
+    gui.add(controller, 'y');
+    gui.add(controller, 'width');
+    gui.add(controller, 'height');
+    gui.add(controller, 'rotation').min(-360).max(360);
+
+    var scale = gui.addFolder('scale');
+    scale.add(controller, 'scaleX').min(0);
+    scale.add(controller, 'scaleY').min(0);
+
+    var skew = gui.addFolder('skew');
+    skew.add(controller, 'skewX').min(-360).max(360);
+    skew.add(controller, 'skewY').min(-360).max(360);
+
+    gui.add(controller, 'tint');
+    gui.add(controller, 'alpha').min(0).max(1);
+
+  </script>
+</body>
+</html>
