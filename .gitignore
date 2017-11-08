@@ -1,7 +1,4 @@
 .DS_STORE
 .idea
-.rpt2_cache/
 
 node_modules/
-types/
-dist/
