@@ -286,8 +286,7 @@ module pixi_tween {
                     }
                 }
             }
-
-            console.log('interpolators', Object.keys(this.interpolators));
+            //console.log('interpolators', Object.keys(this.interpolators));
         }
 
         private updateProps(time: number) {

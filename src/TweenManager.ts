@@ -71,6 +71,10 @@ module pixi_tween {
             return this.add(Tween.create(target, props));
         }
 
+        tween(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]) {
+            return this.create(target, props).start();
+        }
+
         animate(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]) {
             return this.run(Tween.create(target, props));
         }

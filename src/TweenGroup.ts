@@ -9,7 +9,7 @@ module pixi_tween {
 
         constructor(manager: TweenManager, props?: TweenGroup.Properties) {
             this.manager = manager
-            this.loop = props.loop
+            this.loop = props ? props.loop : false
         }
 
         add(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]) {
