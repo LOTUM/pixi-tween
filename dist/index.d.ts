@@ -92,7 +92,7 @@ declare module PIXI.tween {
         private interpolators;
         static create(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]): Tween;
         static animate(node: PIXI.DisplayObject, params: Tween.Properties | Tween.Properties[]): Promise<any>;
-        constructor(target: PIXI.DisplayObject, props: Tween.Properties);
+        constructor(target: PIXI.DisplayObject, props?: Tween.Properties);
         readonly endTime: number;
         promise(event: string): Promise<any>;
         start(): Tween;
@@ -172,6 +172,7 @@ declare module PIXI.tween {
         group(props?: TweenGroup.Properties): TweenGroup;
         sequence(): TweenSequence;
         create(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]): Tween;
+        animate(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]): Promise<any>;
         run(tween: Tween): Promise<any>;
         add(tween: Tween): Tween;
         remove(tween: Tween): void;

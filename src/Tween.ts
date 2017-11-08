@@ -65,11 +65,15 @@ module pixi_tween {
             return Tween.create(node, params).promise(Tween.Events.end)
         }
 
-        constructor(target: PIXI.DisplayObject, props: Tween.Properties) {
+        constructor(target: PIXI.DisplayObject, props?: Tween.Properties) {
             super()
 
             this.target = target
-            this.apply(props)
+            this.clear()
+
+            if (props) {
+                this.apply(props)
+            }
         }
 
         get endTime() {
@@ -144,6 +148,7 @@ module pixi_tween {
             this.expire = false
             this.repeat = 0
             this.yoyo = false
+
             this.started = false
             this.ended = false
 

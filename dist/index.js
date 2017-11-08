@@ -373,7 +373,10 @@ var pixi_tween;
         function Tween(target, props) {
             var _this = _super.call(this) || this;
             _this.target = target;
-            _this.apply(props);
+            _this.clear();
+            if (props) {
+                _this.apply(props);
+            }
             return _this;
         }
         Tween.create = function (target, props) {
@@ -733,6 +736,9 @@ var pixi_tween;
         };
         TweenManager.prototype.create = function (target, props) {
             return this.add(pixi_tween.Tween.create(target, props));
+        };
+        TweenManager.prototype.animate = function (target, props) {
+            return this.run(pixi_tween.Tween.create(target, props));
         };
         TweenManager.prototype.run = function (tween) {
             this.add(tween);
