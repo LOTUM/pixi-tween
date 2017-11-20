@@ -9,7 +9,6 @@
     "inlineSources": true,
     "sourceMap": true,
     "declaration": true,
-    //"declarationDir": "dist",
     "outFile": "dist/index.js"
   },
   "include": [
