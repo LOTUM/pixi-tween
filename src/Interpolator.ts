@@ -20,6 +20,21 @@ module pixi_tween {
         }
     }
 
+    export class LimitInterpolator extends ValueInterpolator {
+
+        constructor(
+            startValue: number,
+            endValue: number,
+            private lowerLimit: number,
+            private upperLimit: number) {
+            super(startValue, endValue)
+        }
+
+        interpolate(fraction: number): number {
+            return Math.max(this.lowerLimit, Math.min(this.upperLimit, super.interpolate(fraction)))
+        }
+    }
+
     export class PointInterpolator implements Interpolator<PIXI.Point> {
 
         private x: ValueInterpolator

@@ -280,6 +280,9 @@ module pixi_tween {
                         case 'tint':
                             this.interpolators[key] = new ColorInterpolator(this.startProps[key], this.endProps[key]);
                             break;
+                        case 'alpha':
+                            this.interpolators[key] = new LimitInterpolator(this.startProps[key], this.endProps[key], 0, 1);
+                            break;
                         default:
                             this.interpolators[key] = new ValueInterpolator(this.startProps[key], this.endProps[key]);
                             break;
