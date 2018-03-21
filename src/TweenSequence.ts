@@ -1,4 +1,3 @@
-
 module pixi_tween {
 
     export class TweenSequence {
@@ -17,9 +16,10 @@ module pixi_tween {
             return tween
         }
 
-        on(event: TweenSequence.Event, callback: Function) {
-            const position = event == "start" ? 0 : this.tweens.length - 1
+        on(event: TweenSequence.Event, callback: Function): this {
+            const position = event == 'start' ? 0 : this.tweens.length - 1
             this.tweens[position].on(event, callback)
+            return this
         }
 
         promise(event: TweenSequence.Event): Promise<any> {
@@ -29,7 +29,7 @@ module pixi_tween {
         }
 
         start(): TweenSequence {
-            let index = 0;
+            let index = 0
             this.manager.run(this.tweens[index]).then(() => {
                 index++
                 if (index < this.tweens.length) {
@@ -43,9 +43,5 @@ module pixi_tween {
 
     export namespace TweenSequence {
         export type Event = 'start' | 'end'
-        export const Events = {
-            start: "start",
-            end: "end"
-        }
     }
 }

@@ -1,4 +1,3 @@
-
 module pixi_tween {
 
     export interface TweenableProperties {
@@ -62,7 +61,7 @@ module pixi_tween {
         }
 
         static animate(node: PIXI.DisplayObject, params: Tween.Properties | Tween.Properties[]): Promise<any> {
-            return Tween.create(node, params).promise(Tween.Events.end)
+            return Tween.create(node, params).promise('end')
         }
 
         constructor(target: PIXI.DisplayObject, props?: Tween.Properties) {
@@ -80,7 +79,7 @@ module pixi_tween {
             return this.delay + this.duration
         }
 
-        promise(event: string): Promise<any> {
+        promise(event: Tween.Event): Promise<any> {
             return new Promise(resolve => {
                 this.once(event, resolve)
             })
@@ -137,7 +136,7 @@ module pixi_tween {
             this.from(props.from)
             this.to(props.to)
 
-            return this;
+            return this
         }
 
         clear(): Tween {
@@ -240,6 +239,15 @@ module pixi_tween {
             }
         }
 
+        on(event: string | symbol | Tween.Event, fn: Function, context?: any): this {
+            return super.on(event, fn, context)
+        }
+
+
+        once(event: string | symbol | Tween.Event, fn: Function, context?: any): this {
+            return super.once(event, fn, context)
+        }
+
         private canUpdate() {
             return (this.duration && this.active && this.target && this.target.transform)
         }
@@ -275,17 +283,17 @@ module pixi_tween {
                     switch (key) {
                         case 'scale':
                         case 'skew':
-                            this.interpolators[key] = new PointInterpolator(this.startProps[key], this.endProps[key]);
-                            break;
+                            this.interpolators[key] = new PointInterpolator(this.startProps[key], this.endProps[key])
+                            break
                         case 'tint':
-                            this.interpolators[key] = new ColorInterpolator(this.startProps[key], this.endProps[key]);
-                            break;
+                            this.interpolators[key] = new ColorInterpolator(this.startProps[key], this.endProps[key])
+                            break
                         case 'alpha':
-                            this.interpolators[key] = new LimitInterpolator(this.startProps[key], this.endProps[key], 0, 1);
-                            break;
+                            this.interpolators[key] = new LimitInterpolator(this.startProps[key], this.endProps[key], 0, 1)
+                            break
                         default:
-                            this.interpolators[key] = new ValueInterpolator(this.startProps[key], this.endProps[key]);
-                            break;
+                            this.interpolators[key] = new ValueInterpolator(this.startProps[key], this.endProps[key])
+                            break
                     }
                 }
             }
@@ -305,15 +313,6 @@ module pixi_tween {
 
     export namespace Tween {
         export type Event = 'start' | 'stop' | 'end' | 'update' | 'repeat' | 'reversed'
-
-        export const Events = {
-            start: "start",
-            stop: "stop",
-            end: "end",
-            update: "update",
-            repeat: "repeat",
-            reversed: "reversed"
-        }
 
         export interface Properties {
             active?: boolean

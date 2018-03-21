@@ -26,7 +26,7 @@ module pixi_tween {
             return tween
         }
 
-        on(event: TweenGroup.Event, callback: Function) {
+        on(event: TweenGroup.Event, fn: Function) {
             let filter
             if (event == 'start') {
                 filter = (prev: Tween, current: Tween) => {
@@ -37,7 +37,7 @@ module pixi_tween {
                     return prev.endTime > current.endTime ? prev : current
                 }
             }
-            this.tweens.reduce(filter).on(event.toString(), callback)
+            this.tweens.reduce(filter).on(event.toString(), fn)
         }
 
         promise(event: TweenGroup.Event): Promise<any> {
@@ -79,10 +79,6 @@ module pixi_tween {
 
     export namespace TweenGroup {
         export type Event = 'start' | 'end'
-        export const Events = {
-            start: 'start',
-            end: 'end'
-        }
 
         export interface Properties {
             loop: boolean

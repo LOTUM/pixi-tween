@@ -91,7 +91,7 @@
 
       //draw the movement
       tweenY.on('update', function(delta){
-          let d = Math.ceil(delta/10);
+          var d = Math.ceil(delta/10);
           if(d !== draw){
             draw = d;
             movement.beginFill(0xff0000);

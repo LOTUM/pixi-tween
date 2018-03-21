@@ -15,12 +15,21 @@ module pixi_tween {
             this.interactive = false
         }
 
+
+        on(event: string | symbol | TweenManager.Event, fn: Function, context?: any): this {
+            return super.on(event, fn, context)
+        }
+
+        once(event: string | symbol | TweenManager.Event, fn: Function, context?: any): this {
+            return super.once(event, fn, context)
+        }
+
         attach(ticker: PIXI.ticker.Ticker) {
             ticker.add(() => {
                 this.update(ticker.elapsedMS)
             });
 
-            this.on(TweenManager.Events.interactive, (interactive: boolean) => {
+            this.on('interactive', (interactive: boolean) => {
                 if (interactive) {
                     ticker.start()
                 } else {
@@ -82,7 +91,7 @@ module pixi_tween {
         run(tween: Tween): Promise<any> {
             this.add(tween)
             tween.start()
-            return tween.promise(Tween.Events.end)
+            return tween.promise('end')
         }
 
         add(tween: Tween): Tween {
@@ -111,16 +120,13 @@ module pixi_tween {
         private toggle(interactive: boolean) {
             if (this.interactive !== interactive) {
                 this.interactive = interactive;
-                this.emit(TweenManager.Events.interactive, interactive);
+                this.emit('interactive', interactive);
             }
         }
     }
 
     export namespace TweenManager {
         export type Event = 'interactive'
-        export const Events = {
-            interactive: 'interactive'
-        }
     }
 }
 

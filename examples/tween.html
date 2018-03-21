@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Pixi.js Test</title>
-  <script src="dat.gui.min.js"></script>
-  <script src="../node_modules/pixi.js/dist/pixi.min.js"></script>
-  <script src="../dist/index.js"></script>
-  <style>
-    html, body{
-      margin: 0;
-      padding: 0;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Pixi.js Test</title>
+    <script src="dat.gui.min.js"></script>
+    <script src="../node_modules/pixi.js/dist/pixi.min.js"></script>
+    <script src="../dist/index.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
 </head>
 <body>
-  <script>
-    var renderer = new PIXI.autoDetectRenderer({ width: 800, height: 600, antialias: true });
+<script>
+    var renderer = new PIXI.autoDetectRenderer({width: 800, height: 600, antialias: true});
     document.body.appendChild(renderer.view);
     var stage = new PIXI.Container();
 
     var ticker = new PIXI.ticker.Ticker();
     ticker.start();
-    ticker.add(function() {
+    ticker.add(function () {
         //console.log("ticker update");
         renderer.render(stage);
         PIXI.tweenManager.update(ticker.elapsedMS);
@@ -77,7 +77,7 @@
             stage.addChild(this._box);
 
             this._tween = PIXI.tweenManager.create(this._box, this._props);
-            this._tween.on(PIXI.tween.Tween.Events.end, () => {
+            this._tween.on('end', function () {
                 this._tween.reset();
             });
 
@@ -87,6 +87,7 @@
         get duration() {
             return this._props.duration;
         }
+
         set duration(value) {
             this._props.duration = value;
             this._update();
@@ -95,6 +96,7 @@
         get delay() {
             return this._props.delay;
         }
+
         set delay(value) {
             this._props.delay = value;
             this._update();
@@ -103,6 +105,7 @@
         get repeat() {
             return this._props.repeat !== Infinity ? this._props.repeat : -1;
         }
+
         set repeat(value) {
             this._props.repeat = value >= 0 ? value : Infinity;
             this._update();
@@ -229,9 +232,11 @@
         start() {
             this._tween.start();
         }
+
         stop() {
             this._tween.stop()
         }
+
         reset() {
             this._box.x = this._props.from.x;
             this._box.y = this._props.from.y;
@@ -276,6 +281,6 @@
     gui.add(controller, 'tint');
     gui.add(controller, 'alpha').min(0).max(1);
 
-  </script>
+</script>
 </body>
 </html>
