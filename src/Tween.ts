@@ -312,7 +312,7 @@ module pixi_tween {
     }
 
     export namespace Tween {
-        export type Event = 'start' | 'stop' | 'end' | 'update' | 'repeat' | 'reversed'
+        export type Event = 'start' | 'stop' | 'end' | 'update' | 'repeat' | 'reversed' | 'pingpong'
 
         export interface Properties {
             active?: boolean
