@@ -10,7 +10,7 @@ module pixi_tween {
         }
 
         add(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]) {
-            const tween = this.manager.add(new Tween(target, Tween.Properties.merge(props)))
+            const tween = this.manager.create(target, props)
             if (this.tweens.length == 0) {
                 tween.applyFrom()
             }

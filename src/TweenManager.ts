@@ -76,9 +76,12 @@ module pixi_tween {
             return new TweenSequence(this)
         }
 
+        create(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]) {
+            return this.add(new Tween(target, Tween.Properties.merge(props)));
+        }
+
         tween(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]) {
-            const tween = new Tween(target, Tween.Properties.merge(props));
-            return this.add(tween).applyFrom().start()
+            return this.create(target, props).applyFrom().start()
         }
 
         add(tween: Tween): Tween {
