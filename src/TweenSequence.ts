@@ -10,7 +10,10 @@ module pixi_tween {
         }
 
         add(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]) {
-            const tween = Tween.create(target, props)
+            const tween = this.manager.add(new Tween(target, Tween.Properties.merge(props)))
+            if (this.tweens.length == 0) {
+                tween.applyFrom()
+            }
             this.tweens.push(tween)
 
             return tween
@@ -29,12 +32,11 @@ module pixi_tween {
         }
 
         start(): TweenSequence {
-            let index = 0
-            this.manager.run(this.tweens[index]).then(() => {
-                index++
-                if (index < this.tweens.length) {
-                    return this.manager.run(this.tweens[index])
-                }
+            let promise = Promise.resolve()
+            this.tweens.forEach(value => {
+                promise = promise.then(() => {
+                    return value.start().promise('end')
+                })
             })
 
             return this

@@ -19,7 +19,7 @@ module pixi_tween {
         delay: 0,
         easing: Easing.linear(),
         repeat: 0,
-        yoyo: false
+        pingpong: false
     }
 
     export class Tween extends PIXI.utils.EventEmitter {
@@ -33,7 +33,7 @@ module pixi_tween {
         public easing: Easing.Function
         public expire: boolean
         public repeat: number
-        public yoyo: boolean
+        public pingpong: boolean
 
         private started: boolean
         public ended: boolean
@@ -47,32 +47,16 @@ module pixi_tween {
 
         private interpolators: { [prop: string]: Interpolator<any> }
 
-        static create(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]) {
-            let merged: Tween.Properties = {...DefaultProperties}
-            if (!Array.isArray(props)) {
-                mergeProps(merged, props)
-            } else {
-                props.forEach((part) => {
-                    mergeProps(merged, part)
-                })
-            }
-
-            return new Tween(target, merged)
-        }
-
-        static animate(node: PIXI.DisplayObject, params: Tween.Properties | Tween.Properties[]): Promise<any> {
-            return Tween.create(node, params).promise('end')
-        }
-
-        constructor(target: PIXI.DisplayObject, props?: Tween.Properties) {
+        constructor(target: PIXI.DisplayObject, props: Tween.Properties) {
             super()
 
             this.target = target
             this.clear()
 
-            if (props) {
-                this.apply(props)
-            }
+            this.apply({
+                ...DefaultProperties,
+                ...props
+            })
         }
 
         get endTime() {
@@ -130,7 +114,7 @@ module pixi_tween {
             this.delay = props.delay
             this.easing = props.easing
             this.repeat = props.repeat
-            this.yoyo = props.yoyo
+            this.pingpong = props.pingpong
             this.expire = props.expire
 
             this.from(props.from)
@@ -146,7 +130,7 @@ module pixi_tween {
             this.easing = Easing.linear()
             this.expire = false
             this.repeat = 0
-            this.yoyo = false
+            this.pingpong = false
 
             this.started = false
             this.ended = false
@@ -174,7 +158,7 @@ module pixi_tween {
             this.started = false
             this.ended = false
 
-            if (this.yoyo && this.reversed) {
+            if (this.pingpong && this.reversed) {
                 [this.startProps, this.endProps] = [this.endProps, this.startProps]
                 this.reversed = false
             }
@@ -198,7 +182,7 @@ module pixi_tween {
                 this.emit('start')
             }
 
-            let time = (this.yoyo) ? this.duration / 2 : this.duration
+            let time = (this.pingpong) ? this.duration / 2 : this.duration
             if (time > this.elapsedTime) {
                 let t = this.elapsedTime + deltaTime
                 let ended = (t >= time)
@@ -206,15 +190,15 @@ module pixi_tween {
                 this.elapsedTime = ended ? time : t
                 this.updateProps(time)
 
-                let realElapsed = this.yoyo ? time + this.elapsedTime : this.elapsedTime
+                let realElapsed = this.pingpong ? time + this.elapsedTime : this.elapsedTime
                 this.emit('update', realElapsed)
 
                 if (ended) {
-                    if (this.yoyo && !this.reversed) {
+                    if (this.pingpong && !this.reversed) {
                         this.reversed = true;
                         [this.startProps, this.endProps] = [this.endProps, this.startProps]
                         this.updateInterpolators()
-                        this.emit('reversed')
+                        this.emit('pingpong')
                         this.elapsedTime = 0
                         return
                     }
@@ -224,7 +208,7 @@ module pixi_tween {
                         this.emit('repeat', this.repeatCount)
                         this.elapsedTime = 0
 
-                        if (this.yoyo && this.reversed) {
+                        if (this.pingpong && this.reversed) {
                             [this.startProps, this.endProps] = [this.endProps, this.startProps]
                             this.updateInterpolators()
                             this.reversed = false
@@ -237,6 +221,16 @@ module pixi_tween {
                     this.emit('end')
                 }
             }
+        }
+
+        applyFrom(){
+            Object.assign(this.target, this.startProps)
+            return this
+        }
+
+        applyTo(){
+            Object.assign(this.target, this.endProps)
+            return this
         }
 
         on(event: string | symbol | Tween.Event, fn: Function, context?: any): this {
@@ -312,7 +306,7 @@ module pixi_tween {
     }
 
     export namespace Tween {
-        export type Event = 'start' | 'stop' | 'end' | 'update' | 'repeat' | 'reversed' | 'pingpong'
+        export type Event = 'start' | 'stop' | 'end' | 'update' | 'repeat' | 'pingpong'
 
         export interface Properties {
             active?: boolean
@@ -321,9 +315,38 @@ module pixi_tween {
             delay?: number
             easing?: Easing.Function
             repeat?: number
-            yoyo?: boolean
+            pingpong?: boolean
             from?: TweenableProperties
             to?: TweenableProperties
+        }
+
+        export namespace Properties {
+
+            export function merge(props: Tween.Properties | Tween.Properties[]): Tween.Properties {
+                let merged: Tween.Properties = {}
+                if (!Array.isArray(props)) {
+                    mergeProps(merged, props)
+                } else {
+                    props.forEach((part) => {
+                        mergeProps(merged, part)
+                    })
+                }
+
+                return merged
+            }
+
+            function mergeProps(target: any, source: any): any {
+                for (const key in source) {
+                    if (isObject(source[key])) {
+                        if (!(key in target)) {
+                            target[key] = {}
+                        }
+                        mergeProps(target[key], source[key])
+                    } else if (source[key] !== undefined) {
+                        target[key] = source[key]
+                    }
+                }
+            }
         }
     }
 }
@@ -336,23 +359,17 @@ function isEqual(obj1: any, obj2: any): boolean {
     return JSON.stringify(obj1) === JSON.stringify(obj2)
 }
 
-function mergeProps(target: any, source: any): any {
-    for (const key in source) {
-        if (isObject(source[key])) {
-            if (!(key in target)) {
-                target[key] = {}
-            }
-            mergeProps(target[key], source[key])
-        } else if (source[key] !== undefined) {
-            target[key] = source[key]
-        }
-    }
-}
+
 
 function getProps(target: any, props: string[]): any {
     const merged: any = {}
     props.forEach((prop) => {
-        merged[prop] = target[prop]
+        if (prop === 'scale') {
+            merged[prop] = {x: target[prop].x, y: target[prop].y}
+        } else {
+            merged[prop] = target[prop]
+        }
+
     })
 
     return merged

@@ -76,27 +76,15 @@ module pixi_tween {
             return new TweenSequence(this)
         }
 
-        create(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]) {
-            return this.add(Tween.create(target, props));
-        }
-
         tween(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]) {
-            return this.create(target, props).start();
-        }
-
-        animate(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]) {
-            return this.run(Tween.create(target, props));
-        }
-
-        run(tween: Tween): Promise<any> {
-            this.add(tween)
-            tween.start()
-            return tween.promise('end')
+            const tween = new Tween(target, Tween.Properties.merge(props));
+            return this.add(tween).applyFrom().start()
         }
 
         add(tween: Tween): Tween {
             tween.manager = this
             this.tweens.push(tween)
+            //todo: improve interactive handling
             this.toggle(true)
 
             return tween

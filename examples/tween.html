@@ -37,7 +37,7 @@
                 delay: 0,
                 easing: PIXI.tween.Easing.linear(),
                 repeat: Infinity,
-                yoyo: false,
+                pingpong: false,
                 from: {
                     x: 200,
                     y: 200,
@@ -121,12 +121,12 @@
             this._update();
         }
 
-        get yoyo() {
-            return this._props.yoyo;
+        get pingpong() {
+            return this._props.pingpong;
         }
 
-        set yoyo(value) {
-            this._props.yoyo = value;
+        set pingpong(value) {
+            this._props.pingpong = value;
             this._update();
         }
 
@@ -263,7 +263,7 @@
     gui.add(controller, 'delay').min(0);
     gui.add(controller, 'repeat').min(-1);
     gui.add(controller, 'easing', Object.keys(PIXI.tween.Easing));
-    gui.add(controller, 'yoyo');
+    gui.add(controller, 'pingpong');
     gui.add(controller, 'x');
     gui.add(controller, 'y');
     gui.add(controller, 'width');

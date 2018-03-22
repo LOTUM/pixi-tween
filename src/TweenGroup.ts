@@ -1,26 +1,23 @@
-
 module pixi_tween {
 
-    export class TweenGroup {
+    const DefaultProperties: TweenGroup.Properties = {
+        repeat: 0
+    }
 
-        public readonly loop: boolean
+    export class TweenGroup {
         private readonly manager: TweenManager
         private readonly tweens: Tween[] = []
+        private props?: TweenGroup.Properties
 
-        constructor(manager: TweenManager, props?: TweenGroup.Properties) {
+        constructor(manager: TweenManager, props: TweenGroup.Properties = DefaultProperties) {
             this.manager = manager
-            this.loop = props ? props.loop : false
+            this.props = props
         }
 
         add(target: PIXI.DisplayObject, props: Tween.Properties | Tween.Properties[]) {
-            /*const defaults = { start: false, expire: !this.loop }
-            if (Array.isArray(props)) {
-                (<TweenParameters[]>props).push(defaults)
-            } else {
-                props = [props, defaults]
-            }*/
-
-            const tween = this.manager.create(target, props)
+            const merged = Tween.Properties.merge(props)
+            merged.expire = this.props.repeat == 0
+            const tween = this.manager.add(new Tween(target, merged))
             this.tweens.push(tween)
 
             return tween
@@ -47,12 +44,15 @@ module pixi_tween {
         }
 
         start(): TweenGroup {
-            if (this.loop) {
+            if (this.props.repeat) {
+                let count = 0
                 this.on('end', () => {
-                    this.tweens.forEach((tween, index) => {
-                        tween.reset()
-                        tween.start()
-                    })
+                    if (count++ < this.props.repeat) {
+                        this.tweens.forEach((tween, index) => {
+                            tween.reset()
+                            tween.start()
+                        })
+                    }
                 })
             }
 
@@ -81,7 +81,7 @@ module pixi_tween {
         export type Event = 'start' | 'end'
 
         export interface Properties {
-            loop: boolean
+            repeat: number
         }
     }
 }
