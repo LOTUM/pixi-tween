@@ -1,6 +1,6 @@
 {
   "name": "pixi-tween",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "pixi-tween is a plugin for Pixi.js v4.1 or higher to create ...",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
