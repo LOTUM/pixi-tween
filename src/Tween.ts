@@ -224,12 +224,12 @@ module pixi_tween {
         }
 
         applyFrom(){
-            Object.assign(this.target, this.startProps)
+            this.setProps(this.startProps)
             return this
         }
 
         applyTo(){
-            Object.assign(this.target, this.endProps)
+            this.setProps(this.endProps)
             return this
         }
 
@@ -255,12 +255,12 @@ module pixi_tween {
 
             const missingStartProps = endProps.filter(key => startProps.indexOf(key) < 0)
             if (missingStartProps.length) {
-                Object.assign(startValues, getProps(this.target, missingStartProps))
+                Object.assign(startValues, this.getProps(missingStartProps))
             }
 
             const missingEndProps = startProps.filter(key => endProps.indexOf(key) < 0)
             if (missingEndProps.length) {
-                Object.assign(endValues, getProps(this.target, missingEndProps))
+                Object.assign(endValues, this.getProps(missingEndProps))
             }
 
             this.startProps = startValues
@@ -291,7 +291,6 @@ module pixi_tween {
                     }
                 }
             }
-            //console.log('interpolators', Object.keys(this.interpolators));
         }
 
         private updateProps(time: number) {
@@ -301,6 +300,42 @@ module pixi_tween {
             //console.log('Tween: update props')
             for (const prop in this.interpolators) {
                 (<any>this.target)[prop] = this.interpolators[prop].interpolate(m)
+            }
+        }
+
+        private getProps(props: string[]): { [key: string]: any } {
+            const values: any = {}
+            props.forEach((prop) => {
+                switch (prop) {
+                    case 'scale':
+                    case 'skew':
+                        values[prop] = {x: this.target[prop].x, y: this.target[prop].y}
+                        break
+                    default:
+                        values[prop] = (<any>this.target)[prop]
+                        break
+                }
+            })
+
+            return values
+        }
+
+        private setProps(props: { [key: string]: any}) {
+            for (let name in props) {
+                const value = props[name]
+                switch (name) {
+                    case 'scale':
+                    case 'skew':
+                        if (typeof value == 'number') {
+                            this.target[name].set(value)
+                        } else {
+                            this.target[name].set(value.x, value.y)
+                        }
+                        break
+                    default:
+                        (<any>this.target)[name] = value
+                        break
+                }
             }
         }
     }
@@ -357,20 +392,4 @@ function isObject(obj: any): boolean {
 
 function isEqual(obj1: any, obj2: any): boolean {
     return JSON.stringify(obj1) === JSON.stringify(obj2)
-}
-
-
-
-function getProps(target: any, props: string[]): any {
-    const merged: any = {}
-    props.forEach((prop) => {
-        if (prop === 'scale') {
-            merged[prop] = {x: target[prop].x, y: target[prop].y}
-        } else {
-            merged[prop] = target[prop]
-        }
-
-    })
-
-    return merged
 }
