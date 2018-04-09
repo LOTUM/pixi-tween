@@ -1,6 +1,6 @@
 {
   "name": "pixi-tween",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "pixi-tween is a plugin for Pixi.js v4.1 or higher to create ...",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,13 +31,13 @@
     "install": "npm run build"
   },
   "dependencies": {
-    "@types/pixi.js": "^4.5.7",
     "tmp": "0.0.33",
     "rimraf": "^2.6.2",
     "glob": "~7.1.1",
     "typescript": "^2.6.1"
   },
   "devDependencies": {
-    "pixi.js": "^4.6.0"
+    "pixi.js": "^4.6.0",
+    "@types/pixi.js": "^4.5.7"
   }
 }
