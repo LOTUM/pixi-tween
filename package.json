@@ -1,9 +1,9 @@
 {
   "name": "pixi-tween",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "pixi-tween is a plugin for Pixi.js v4.1 or higher to create ...",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/pixi-tween.js",
+  "types": "dist/pixi-tween.d.ts",
   "author": "Joachim Böhmer",
   "contributors": [
     "Joachim Böhmer <boehmer@lotum.com>",
@@ -22,8 +22,7 @@
     "url": "https://github.com/lotum/pixi-tween.git"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "typings": "node scripts/typings.js",
+    "typings": "node scripts/fix-declaration-namespace.js",
     "clean": "rimraf dist/**",
     "prebuild": "npm run clean",
     "build": "tsc && npm run typings",
@@ -31,13 +30,11 @@
     "install": "npm run build"
   },
   "dependencies": {
-    "tmp": "0.0.33",
-    "rimraf": "^2.6.2",
-    "glob": "~7.1.1",
-    "typescript": "^2.6.1"
+    "rimraf": "2.6.2",
+    "typescript": "2.8.1"
   },
   "devDependencies": {
-    "pixi.js": "^4.6.0",
-    "@types/pixi.js": "^4.5.7"
+    "pixi.js": "4.7.0",
+    "@types/pixi.js": "4.7.0"
   }
 }

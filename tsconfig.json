@@ -9,7 +9,7 @@
     "inlineSources": true,
     "sourceMap": true,
     "declaration": true,
-    "outFile": "dist/index.js"
+    "outFile": "dist/pixi-tween.js"
   },
   "include": [
     "src/**/*"
