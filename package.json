@@ -1,5 +1,5 @@
 {
-  "name": "pixi-tween",
+  "name": "@lotum/pixi-tween",
   "version": "2.2.3",
   "description": "pixi-tween is a plugin for Pixi.js v4.1 or higher to create ...",
   "main": "dist/pixi-tween.js",
@@ -19,7 +19,7 @@
   "homepage": "https://github.com/lotum/pixi-tween",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lotum/pixi-tween.git"
+    "url": "git+https://github.com/lotum/pixi-tween.git"
   },
   "scripts": {
     "typings": "node scripts/fix-declaration-namespace.js",
@@ -27,14 +27,22 @@
     "prebuild": "npm run clean",
     "build": "tsc && npm run typings",
     "watch": "tsc -w",
-    "install": "npm run build"
-  },
-  "dependencies": {
-    "rimraf": "2.6.2",
-    "typescript": "2.8.1"
+    "publish:patch": "npm run build npm version patch && npm publish",
+    "publish:minor": "npm run build npm version minor && npm publish",
+    "publish:major": "npm run build npm version major && npm publish"
   },
   "devDependencies": {
-    "pixi.js": "4.7.0",
+    "rimraf": "2.6.2",
+    "typescript": "2.8.1",
     "@types/pixi.js": "4.7.0"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/lotum/pixi-tween/issues"
+  },
+  "directories": {
+    "example": "examples"
+  },
+  "files": [
+    "dist/*"
+  ]
 }
